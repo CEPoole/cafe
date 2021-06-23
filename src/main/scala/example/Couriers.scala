@@ -9,12 +9,17 @@ sealed abstract class Courier(workStart: LocalTime,
                               canChill: Boolean,
                               charge: Double) {
 
-  def isWorking(implicit now: LocalTime): Boolean = workStart.isBefore(now) && workEnd.isAfter(now.plusHours(1))
-  def inRange(implicit distance: Int): Boolean = distance <= distanceInMiles
-  def required(implicit chilled: Boolean): Boolean = canChill >= chilled
+  private def isWorking(implicit now: LocalTime): Boolean  = workStart.isBefore(now) && workEnd.isAfter(now)
+  private def inRange(implicit distance: Int): Boolean     = distance <= distanceInMiles
+  private def required(implicit chilled: Boolean): Boolean = canChill >= chilled
+
+  private def myNameIsGeoff: Boolean = name == "Geoff"
+
+  def canDeliver(implicit now: LocalTime, distance: Int, chilled: Boolean): Boolean = isWorking && inRange && required
+  def rankCost(implicit distance: Int): Double = if(myNameIsGeoff) cost - 1 else cost
 
   def cost(implicit distance: Int): Double = distance * charge
-  def name: String = this.getClass.getSimpleName
+  def name: String = this.getClass.getSimpleName.dropRight(1)
 }
 
 
